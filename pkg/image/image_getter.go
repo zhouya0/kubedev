@@ -2,6 +2,7 @@ package image
 
 import (
 	"fmt"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -17,10 +18,11 @@ var Images = map[string]string{
 func PullImage(image string) error {
 	oldImage := image
 	for k, v := range Images {
-		strings.Replace(image, k, v, -1)
+		image = strings.Replace(image, k, v, -1)
 	}
 	pullCmd := fmt.Sprintf("docker pull %s", image)
-	cmd := exec.Command(pullCmd)
+	log.Printf("Using image %s\n", pullCmd)
+	cmd := exec.Command("docker", "pull", image)
 	err := cmd.Start()
 	if err != nil {
 		return err
@@ -38,7 +40,8 @@ func PullImage(image string) error {
 
 func tagImage(oldImage string, newImage string) error {
 	tagCmd := fmt.Sprintf("docker tag %s %s", oldImage, newImage)
-	cmd := exec.Command(tagCmd)
+	log.Printf("Tagging image: %s\n", tagCmd)
+	cmd := exec.Command("docker", "tag", oldImage, newImage)
 	err := cmd.Start()
 	if err != nil {
 		return err
@@ -48,7 +51,8 @@ func tagImage(oldImage string, newImage string) error {
 
 func deleteImage(image string) error {
 	deleteCmd := fmt.Sprintf("docker rmi %s", image)
-	cmd := exec.Command(deleteCmd)
+	log.Printf("Deleting Image: %s \v", deleteCmd)
+	cmd := exec.Command("docker", "rmi", image)
 	err := cmd.Start()
 	if err != nil {
 		return err
