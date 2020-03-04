@@ -31,7 +31,7 @@ func PullImage(image string) error {
 	if err != nil {
 		return err
 	}
-	err = deleteImage(oldImage)
+	err = deleteImage(image)
 	if err != nil {
 		return err
 	}
