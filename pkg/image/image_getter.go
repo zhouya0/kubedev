@@ -17,9 +17,9 @@ var Images = map[string]string{
 // PullImage will try to pull image using CN source
 func PullImage(image string) error {
 	oldImage := image
-	for k, v := range Images {
-		image = strings.Replace(image, k, v, -1)
-	}
+	slices := strings.Split(image, "/")
+	slices[0] = Images[slices[0]]
+	image = strings.Join(slices, "/")
 	pullCmd := fmt.Sprintf("docker pull %s", image)
 	log.Printf("Using image %s\n", pullCmd)
 	cmd := exec.Command("docker", "pull", image)
