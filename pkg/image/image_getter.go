@@ -23,7 +23,7 @@ func PullImage(image string) error {
 	pullCmd := fmt.Sprintf("docker pull %s", image)
 	log.Printf("Using image %s\n", pullCmd)
 	cmd := exec.Command("docker", "pull", image)
-	err := cmd.Start()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func tagImage(oldImage string, newImage string) error {
 	tagCmd := fmt.Sprintf("docker tag %s %s", oldImage, newImage)
 	log.Printf("Tagging image: %s\n", tagCmd)
 	cmd := exec.Command("docker", "tag", oldImage, newImage)
-	err := cmd.Start()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func deleteImage(image string) error {
 	deleteCmd := fmt.Sprintf("docker rmi %s", image)
 	log.Printf("Deleting Image: %s \v", deleteCmd)
 	cmd := exec.Command("docker", "rmi", image)
-	err := cmd.Start()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
