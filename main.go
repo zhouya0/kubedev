@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"kubedev/pkg/env"
 	"kubedev/pkg/image"
 )
 
@@ -11,4 +12,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	k := env.GetAllImages()
+	fmt.Println(k)
 }
