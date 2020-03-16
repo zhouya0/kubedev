@@ -3,7 +3,9 @@ package image
 import (
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
+	"log"
 	"os/exec"
+	"reflect"
 )
 
 // KUBE_FASTBUILD=false \
@@ -15,8 +17,10 @@ import (
 // GOFLAGS="-tags=nokmem" \
 // make release-images
 
+var HardCodeString []string = []string{"KUBE_FASTBUILD", "KUBE_BUILD_HYPERKUBE", "KUBE_BUILD_CONFORMANCE", "KUBE_DOCKER_IMAGE_TAG", "KUBE_DOCKER_REGISTRY", "KUBE_GIT_VERSION_FILE", "GOFLAGS"}
+
 type ImageConfig struct {
-	KubeFastBuild        bool
+	KubeFastBuild        string
 	KubeBuildHyperkube   string
 	KubeBuildConformance string
 	KubeDockerImageTag   string
@@ -27,13 +31,27 @@ type ImageConfig struct {
 
 func NewDefaultImageConfig() *ImageConfig {
 	return &ImageConfig{
-		KubeFastBuild:        false,
+		KubeFastBuild:        "false",
 		KubeBuildHyperkube:   "n",
 		KubeBuildConformance: "n",
 		KubeDockerImageTag:   "",
 		KubeDockerRegistry:   "",
 		KubeGitVersionFile:   "",
 	}
+}
+
+func (i *ImageConfig) String() string {
+	v := reflect.ValueOf(*i)
+	count := v.NumField()
+	imageConfigString := ""
+	for i := 0; i < count; i++ {
+		f := v.Field(i)
+		if f.String() != "" {
+			imageConfigString = imageConfigString + " " + HardCodeString[i] + "=" + f.String()
+		}
+
+	}
+	return imageConfigString
 }
 
 func (i *ImageConfig) SetKubeDockerImageTag(s string) {
@@ -49,11 +67,15 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 }
 
 func BuildImages() error {
-	cmd := exec.Command("make", "release-images")
-	_, err := cmd.CombinedOutput()
+	imageConfig := NewDefaultImageConfig()
+	log.Printf("The image config is: %s", imageConfig.String())
+	cmd := exec.Command("make", "release-images", imageConfig.String())
+	out, err := cmd.CombinedOutput()
 	if err != nil {
+		log.Printf("Error building images: %s", err.Error())
 		return err
 	}
+	log.Printf("Build images: %s", string(out))
 	return nil
 }
 

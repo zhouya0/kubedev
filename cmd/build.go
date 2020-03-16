@@ -14,7 +14,7 @@ var buildCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(args)
-		BuildComponents(args)
+		Fatal(BuildComponents(args).Error(), DefaultErrorExitCode)
 	},
 }
 
