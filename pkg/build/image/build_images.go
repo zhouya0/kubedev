@@ -69,6 +69,9 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 func BuildImages() error {
 	imageConfig := NewDefaultImageConfig()
 	log.Printf("The image config is: %s", imageConfig.String())
+	// Step 1: pull all images
+	prePullImages()
+	// Step 2: make release
 	cmd := exec.Command("make", "release-images", imageConfig.String())
 	out, err := cmd.CombinedOutput()
 	if err != nil {

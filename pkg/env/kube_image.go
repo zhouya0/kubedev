@@ -70,7 +70,7 @@ func (k *KubeBuildImages) getDebianBase() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianBase version %s", version)
-		debianBase := "k8s.gcr.io/debian-base-amd64:" + "version"
+		debianBase := "k8s.gcr.io/debian-base-amd64:" + version
 		k.DebianBase = debianBase
 
 	}
