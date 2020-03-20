@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"kubedev/cmd"
+	"kubedev/pkg/env"
 )
 
 func main() {
-	fmt.Println("test")
-	cmd.Execute()
+	kubeVersion := env.NewKubeVersion()
+	fmt.Printf("final version is %v \n", kubeVersion)
 }
