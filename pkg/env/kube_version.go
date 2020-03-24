@@ -1,30 +1,12 @@
 package env
 
-// echo "================================================"
-// echo "get kubernetes version"
-// KUBE_GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null)
-// KUBE_GIT_VERSION=$(git describe --tags --abbrev=14 "${KUBE_GIT_COMMIT}" | cut -d "-" -f 1,2)
-// #KUBE_VERSION=${KUBE_GIT_VERSION##v} # remove the leading v, 将v1.15.3改为1.15.3
-// KUBE_VERSION=${KUBE_GIT_VERSION}
-// echo "================================================"
-// echo "create kubernetes version file"
-// cat <<EOF >"dce_version"
-// KUBE_GIT_COMMIT=${KUBE_GIT_COMMIT-}
-// KUBE_GIT_TREE_STATE='clean'
-// KUBE_GIT_VERSION=${KUBE_GIT_VERSION-}
-// KUBE_GIT_MAJOR='${KUBE_VERSION:0:1}'
-// KUBE_GIT_MINOR='${KUBE_VERSION:2:2}'
-// EOF
-
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os/exec"
 	"strings"
 )
-
-// cmd := exec.Command("cat", "build/build-image/cross/VERSION")
-// out, _ := cmd.CombinedOutput()
 
 var cleanTreeState string = "clean"
 
@@ -102,4 +84,25 @@ func NewKubeVersion() KubeVersion {
 	k.setKubeTreeState("")
 	k.setKubeGitMajorAndMinor()
 	return k
+}
+
+func generateContent() string {
+	var s string
+	k := NewKubeVersion()
+	s = s + fmt.Sprintf("KUBE_GIT_COMMIT=%s\n", k.KubeGitCommit)
+	s = s + fmt.Sprintf("KUBE_GIT_TREE_STATE=%s\n", k.KubeGitTreeState)
+	s = s + fmt.Sprintf("KUBE_GIT_VERSION=%s\n", k.KubeGitVersion)
+	s = s + fmt.Sprintf("KUBE_GIT_MAJOR=%s\n", k.KubeGitMajor)
+	s = s + fmt.Sprintf("KUBE_GIT_MINOR=%s\n", k.KubeGitMinor)
+	return s
+}
+
+func WriteVersionFile(name string) error {
+	content := generateContent()
+	data := []byte(content)
+	err := ioutil.WriteFile(name, data, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -6,6 +6,8 @@ import (
 )
 
 func main() {
-	kubeVersion := env.NewKubeVersion()
-	fmt.Printf("final version is %v \n", kubeVersion)
+	err := env.WriteVersionFile("dce_version")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
