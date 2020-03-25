@@ -19,7 +19,8 @@ func GetAllImages() KubeBuildImages {
 	k := KubeBuildImages{}
 	k.getKubeCross()
 	k.getKubePause()
-	k.getDebianHyperKubeBase()
+	// DebiamHyperKubeBase not needed
+	//	k.getDebianHyperKubeBase()
 	k.getDebianBase()
 	k.getDebianIptables()
 	return k
@@ -56,8 +57,8 @@ func (k *KubeBuildImages) getDebianHyperKubeBase() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianHyperKubeBase version %s", version)
-		debianIptables := "k8s.gcr.io/debian-base-amd64:" + version
-		k.DebianIptables = debianIptables
+		debianHyperKubeBase := "k8s.gcr.io/debian-hyperkube-base-amd64" + version
+		k.DebianIptables = debianHyperKubeBase
 	}
 }
 
@@ -85,7 +86,7 @@ func (k *KubeBuildImages) getDebianIptables() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianIptables version %s", version)
-		debianIptables := "k8s.gcr.io/debian-hyperkube-base-amd64:" + version
+		debianIptables := "k8s.gcr.io/debian-iptables-amd64:" + version
 		k.DebianIptables = debianIptables
 	}
 }

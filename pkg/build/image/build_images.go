@@ -8,35 +8,29 @@ import (
 	"reflect"
 )
 
-// KUBE_FASTBUILD=false \
-// KUBE_BUILD_HYPERKUBE=n \
-// KUBE_BUILD_CONFORMANCE=n \
-// KUBE_DOCKER_IMAGE_TAG=${KUBE_VERSION} \
-// KUBE_DOCKER_REGISTRY=${HUB_PREFIX} \
-// KUBE_GIT_VERSION_FILE=./dce_version \
-// GOFLAGS="-tags=nokmem" \
-// make release-images
-
-var HardCodeString []string = []string{"KUBE_FASTBUILD", "KUBE_BUILD_HYPERKUBE", "KUBE_BUILD_CONFORMANCE", "KUBE_DOCKER_IMAGE_TAG", "KUBE_DOCKER_REGISTRY", "KUBE_GIT_VERSION_FILE", "GOFLAGS"}
+var HardCodeString []string = []string{"KUBE_FASTBUILD", "KUBE_BUILD_HYPERKUBE", "KUBE_BUILD_CONFORMANCE", "KUBE_DOCKER_IMAGE_TAG", "KUBE_DOCKER_REGISTRY", "KUBE_GIT_VERSION_FILE", "KUBE_BUILD_PULL_LATEST_IMAGES", "GOFLAGS"}
 
 type ImageConfig struct {
-	KubeFastBuild        string
-	KubeBuildHyperkube   string
-	KubeBuildConformance string
-	KubeDockerImageTag   string
-	KubeDockerRegistry   string
-	KubeGitVersionFile   string
-	GoFlags              string
+	KubeFastBuild             string
+	KubeBuildHyperkube        string
+	KubeBuildConformance      string
+	KubeDockerImageTag        string
+	KubeDockerRegistry        string
+	KubeGitVersionFile        string
+	KubeBuildPullLatestImages string
+	GoFlags                   string
 }
 
 func NewDefaultImageConfig() *ImageConfig {
 	return &ImageConfig{
-		KubeFastBuild:        "false",
-		KubeBuildHyperkube:   "n",
-		KubeBuildConformance: "n",
-		KubeDockerImageTag:   "",
-		KubeDockerRegistry:   "",
-		KubeGitVersionFile:   env.KubeVersionFile,
+		KubeFastBuild:             "false",
+		KubeBuildHyperkube:        "n",
+		KubeBuildConformance:      "n",
+		KubeDockerImageTag:        "",
+		KubeDockerRegistry:        "",
+		KubeGitVersionFile:        env.KubeVersionFile,
+		KubeBuildPullLatestImages: "n",
+		GoFlags:                   "-tags=nokmem",
 	}
 }
 
@@ -90,8 +84,8 @@ func BuildImages() error {
 func prePullImages() {
 	kubeImages := env.GetAllImages()
 	imageGetter.PullImage(kubeImages.DebianBase)
-	imageGetter.PullImage(kubeImages.DebianHyperKubeBase)
-	imageGetter.PullImage(kubeImages.KubeCross)
+	// imageGetter.PullImage(kubeImages.DebianHyperKubeBase)
+	// imageGetter.PullImage(kubeImages.KubeCross)
 	imageGetter.PullImage(kubeImages.KubePause)
 	imageGetter.PullImage(kubeImages.DebianIptables)
 }
