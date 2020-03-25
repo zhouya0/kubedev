@@ -23,7 +23,7 @@ type ImageConfig struct {
 
 func NewDefaultImageConfig() *ImageConfig {
 	return &ImageConfig{
-		KubeFastBuild:             "false",
+		KubeFastBuild:             "true",
 		KubeBuildHyperkube:        "n",
 		KubeBuildConformance:      "n",
 		KubeDockerImageTag:        "",

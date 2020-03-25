@@ -20,8 +20,6 @@ func PullImage(image string) error {
 	slices := strings.Split(image, "/")
 	slices[0] = Images[slices[0]]
 	image = strings.Join(slices, "/")
-	pullCmd := fmt.Sprintf("docker pull %s", image)
-	log.Printf("Using image %s\n", pullCmd)
 	cmd := exec.Command("docker", "pull", image)
 	out, err := cmd.CombinedOutput()
 	log.Printf("Pull image output: %s", string(out))
@@ -43,11 +41,10 @@ func tagImage(oldImage string, newImage string) error {
 	tagCmd := fmt.Sprintf("docker tag %s %s", oldImage, newImage)
 	log.Printf("Tagging image: %s\n", tagCmd)
 	cmd := exec.Command("docker", "tag", oldImage, newImage)
-	out, err := cmd.CombinedOutput()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
-	log.Printf("Tagging image output: %s", string(out))
 	return nil
 }
 
@@ -55,10 +52,9 @@ func deleteImage(image string) error {
 	deleteCmd := fmt.Sprintf("docker rmi %s", image)
 	log.Printf("Deleting Image: %s \v", deleteCmd)
 	cmd := exec.Command("docker", "rmi", image)
-	out, err := cmd.CombinedOutput()
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}
-	log.Printf("Deleting image output %s", string(out))
 	return nil
 }
