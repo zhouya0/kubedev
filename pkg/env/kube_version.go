@@ -51,7 +51,11 @@ func (k *KubeVersion) setKubeGitVersion(s string) error {
 		return err
 	}
 	cutVersion := strings.Split(string(fullVersion), "-")
-	k.KubeGitVersion = cutVersion[0] + cutVersion[1]
+	if len(cutVersion) > 1 {
+		k.KubeGitVersion = cutVersion[0] + cutVersion[1]
+	} else {
+		k.KubeGitVersion = cutVersion[0]
+	}
 	log.Printf("Kube version is: %v \n", k.KubeGitVersion)
 	return nil
 }
