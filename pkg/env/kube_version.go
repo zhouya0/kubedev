@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var KubeVersionFile string = "kube_version"
+
 var cleanTreeState string = "clean"
 
 type KubeVersion struct {

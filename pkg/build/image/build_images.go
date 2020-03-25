@@ -36,7 +36,7 @@ func NewDefaultImageConfig() *ImageConfig {
 		KubeBuildConformance: "n",
 		KubeDockerImageTag:   "",
 		KubeDockerRegistry:   "",
-		KubeGitVersionFile:   "",
+		KubeGitVersionFile:   env.KubeVersionFile,
 	}
 }
 
@@ -69,8 +69,13 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 func BuildImages() error {
 	imageConfig := NewDefaultImageConfig()
 	log.Printf("The image config is: %s", imageConfig.String())
+
 	// Step 1: pull all images
 	prePullImages()
+
+	// Step 2: generate version file
+	env.WriteVersionFile(env.KubeVersionFile)
+
 	// Step 2: make release
 	cmd := exec.Command("make", "release-images", imageConfig.String())
 	out, err := cmd.CombinedOutput()
