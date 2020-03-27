@@ -1,6 +1,7 @@
 package image
 
 import (
+	"fmt"
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
 	"log"
@@ -61,6 +62,7 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 }
 
 func BuildImages() error {
+	fmt.Printf("Reading config file %v\n", env.Config)
 	imageConfig := NewDefaultImageConfig()
 	log.Printf("The image config is: %s", imageConfig.String())
 

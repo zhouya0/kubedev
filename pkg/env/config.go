@@ -1,19 +1,10 @@
 package env
 
-import (
-	"fmt"
-
-	"github.com/spf13/viper"
-)
-
+// KubeDevConfig is the only config file for kubedev
 type KubeDevConfig struct {
 	DockerRegistry string
 	DockerTag      string
 }
 
-func NewKubeDevConfig() KubeDevConfig {
-	var config KubeDevConfig
-	viper.Unmarshal(config)
-	fmt.Println(config)
-	return config
-}
+
+var Config KubeDevConfig

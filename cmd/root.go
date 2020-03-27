@@ -6,6 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"kubedev/pkg/env"
+
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
@@ -45,7 +47,8 @@ func initConfig() {
 			os.Exit(1)
 		}
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".kubedev.yaml")
+		// can't have postprefix here
+		viper.SetConfigName(".kubedev")
 	}
 
 	// read in environment variables that match
@@ -53,6 +56,7 @@ func initConfig() {
 	fmt.Println("I'm excuted")
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		viper.Unmarshal(&env.Config)
 	} else if err != nil {
 		fmt.Println(err.Error())
 	}
