@@ -49,6 +49,17 @@ func (i *ImageConfig) String() string {
 	return imageConfigString
 }
 
+func (i *ImageConfig) SetEnv(cmd *exec.Cmd) {
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_FASTBUILD=%s", i.KubeFastBuild))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_HYPERKUBE=%s", i.KubeBuildHyperkube))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_CONFORMANCE=%s", i.KubeBuildConformance))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_DOCKER_IMAGE_TAG=%s", i.KubeDockerImageTag))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_DOCKER_REGISTRY=%s", i.KubeDockerRegistry))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_GIT_VERSION_FILE=%s", i.KubeGitVersionFile))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_PULL_LATEST_IMAGES=%s", i.KubeBuildPullLatestImages))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("GOFLAGS=%s", i.GoFlags))
+}
+
 func (i *ImageConfig) SetKubeDockerImageTag(s string) {
 	i.KubeDockerImageTag = s
 }
@@ -67,7 +78,6 @@ func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
 }
 
 func BuildImages() error {
-	fmt.Printf("Reading config file %v\n", env.Config)
 	imageConfig := NewDefaultImageConfig()
 
 	// Step 1: init config file
@@ -81,7 +91,9 @@ func BuildImages() error {
 	env.WriteVersionFile(env.KubeVersionFile)
 
 	// Step 4: make release
-	cmd := exec.Command("make", "release-images", imageConfig.String())
+	cmd := exec.Command("make", "release-images")
+	imageConfig.SetEnv(cmd)
+
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error building images: %s", err.Error())

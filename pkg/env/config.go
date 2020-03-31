@@ -4,7 +4,7 @@ package env
 type KubeDevConfig struct {
 	DockerRegistry string
 	DockerTag      string
+	BuildPlatform  string
 }
-
 
 var Config KubeDevConfig
