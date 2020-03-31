@@ -61,18 +61,26 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 	i.KubeGitVersionFile = s
 }
 
+func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
+	i.KubeDockerImageTag = k.DockerTag
+	i.KubeDockerRegistry = k.DockerRegistry
+}
+
 func BuildImages() error {
 	fmt.Printf("Reading config file %v\n", env.Config)
 	imageConfig := NewDefaultImageConfig()
 	log.Printf("The image config is: %s", imageConfig.String())
 
-	// Step 1: pull all images
+	// Step 1: init config file
+	mergeKubeDevConfigAndImageConfig(&env.Config, imageConfig)
+
+	// Step 2: pull all images
 	prePullImages()
 
-	// Step 2: generate version file
+	// Step 3: generate version file
 	env.WriteVersionFile(env.KubeVersionFile)
 
-	// Step 2: make release
+	// Step 4: make release
 	cmd := exec.Command("make", "release-images", imageConfig.String())
 	out, err := cmd.CombinedOutput()
 	if err != nil {
