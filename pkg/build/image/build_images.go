@@ -5,6 +5,7 @@ import (
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
 	"log"
+	"os"
 	"os/exec"
 	"reflect"
 )
@@ -92,8 +93,8 @@ func BuildImages() error {
 
 	// Step 4: make release
 	cmd := exec.Command("make", "release-images")
+	cmd.Env = os.Environ()
 	imageConfig.SetEnv(cmd)
-
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error building images: %s", err.Error())

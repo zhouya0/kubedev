@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"kubedev/pkg/env"
 	"log"
+	"os"
 	"os/exec"
 	"reflect"
 )
@@ -58,6 +59,7 @@ func BuildBinary() error {
 
 	// step 3: build binary
 	cmd := exec.Command("bash", "build/run.sh", "make")
+	cmd.Env = os.Environ()
 	binConfig.SetEnv(cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
