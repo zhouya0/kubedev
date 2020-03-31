@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -25,4 +26,20 @@ func Fatal(msg string, code int) {
 		fmt.Fprint(os.Stderr, msg)
 	}
 	os.Exit(code)
+}
+
+func DefaultSubCommandRun(out io.Writer) func(c *cobra.Command, args []string) {
+	return func(c *cobra.Command, args []string) {
+		c.SetOutput(out)
+		RequireNoArguments(c, args)
+		c.Help()
+		Fatal("", DefaultErrorExitCode)
+	}
+}
+
+func RequireNoArguments(c *cobra.Command, args []string) {
+	// if it's not the subcommand, the args will be more than 1
+	if len(args) > 0 {
+		Fatal(UsageErrorf(c, "unknown command %q", strings.Join(args, " ")).Error(), DefaultErrorExitCode)
+	}
 }

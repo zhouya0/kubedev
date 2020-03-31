@@ -69,10 +69,10 @@ func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
 func BuildImages() error {
 	fmt.Printf("Reading config file %v\n", env.Config)
 	imageConfig := NewDefaultImageConfig()
-	log.Printf("The image config is: %s", imageConfig.String())
 
 	// Step 1: init config file
 	mergeKubeDevConfigAndImageConfig(&env.Config, imageConfig)
+	log.Printf("The image config is: %s", imageConfig.String())
 
 	// Step 2: pull all images
 	prePullImages()

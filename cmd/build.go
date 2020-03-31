@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"kubedev/pkg/build/image"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -12,16 +11,10 @@ var buildCmd = &cobra.Command{
 	Short: "Build the kubernetes components",
 	Long:  "Build the kubernetes components",
 
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(args)
-		Fatal(BuildComponents(args).Error(), DefaultErrorExitCode)
-	},
+	Run: DefaultSubCommandRun(os.Stderr),
 }
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-}
-
-func BuildComponents(args []string) error {
-	return image.BuildImages()
+	buildCmd.AddCommand(imageCmd)
 }
