@@ -14,7 +14,10 @@ var imageCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(args)
-		Fatal(BuildComponents(args).Error(), DefaultErrorExitCode)
+		err := BuildComponents(args)
+		if err != nil {
+			Fatal(err.Error(), DefaultErrorExitCode)
+		}
 	},
 }
 
