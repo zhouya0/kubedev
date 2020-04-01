@@ -14,13 +14,17 @@ var imageCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(args)
-		err := BuildComponents(args)
+		err := BuildImageComponents(args)
 		if err != nil {
 			Fatal(err.Error(), DefaultErrorExitCode)
 		}
 	},
 }
 
-func BuildComponents(args []string) error {
-	return image.BuildImages()
+func init() {
+	rootCmd.AddCommand(imageCmd)
+}
+
+func BuildImageComponents(args []string) error {
+	return image.BuildImages(args)
 }

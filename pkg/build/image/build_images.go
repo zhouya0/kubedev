@@ -78,7 +78,7 @@ func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
 	i.KubeDockerRegistry = k.DockerRegistry
 }
 
-func BuildImages() error {
+func BuildImages(args []string) error {
 	imageConfig := NewDefaultImageConfig()
 
 	// Step 1: init config file
@@ -86,10 +86,16 @@ func BuildImages() error {
 	log.Printf("The image config is: %s", imageConfig.String())
 
 	// Step 2: pull all images
-	prePullImages()
+	err := prePullImages()
+	if err != nil {
+		return err
+	}
 
 	// Step 3: generate version file
-	env.WriteVersionFile(env.KubeVersionFile)
+	err = env.WriteVersionFile(env.KubeVersionFile)
+	if err != nil {
+		return err
+	}
 
 	// Step 4: make release
 	cmd := exec.Command("make", "release-images")
@@ -104,11 +110,21 @@ func BuildImages() error {
 	return nil
 }
 
-func prePullImages() {
+func prePullImages() error {
 	kubeImages := env.GetAllImages()
-	imageGetter.PullImage(kubeImages.DebianBase)
+	err := imageGetter.PullImage(kubeImages.DebianBase)
+	if err != nil {
+		return err
+	}
 	// imageGetter.PullImage(kubeImages.DebianHyperKubeBase)
 	// imageGetter.PullImage(kubeImages.KubeCross)
-	imageGetter.PullImage(kubeImages.KubePause)
-	imageGetter.PullImage(kubeImages.DebianIptables)
+	err = imageGetter.PullImage(kubeImages.KubePause)
+	if err != nil {
+		return err
+	}
+	err = imageGetter.PullImage(kubeImages.DebianIptables)
+	if err != nil {
+		return err
+	}
+	return nil
 }

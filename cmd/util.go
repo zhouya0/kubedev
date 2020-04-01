@@ -43,3 +43,9 @@ func RequireNoArguments(c *cobra.Command, args []string) {
 		Fatal(UsageErrorf(c, "unknown command %q", strings.Join(args, " ")).Error(), DefaultErrorExitCode)
 	}
 }
+
+func RequireArguments(c *cobra.Command, args []string) {
+	if len(args) < 1 {
+		Fatal(UsageErrorf(c, "more arguments is needed: %v", strings.Join(args, " ")).Error(), DefaultErrorExitCode)
+	}
+}

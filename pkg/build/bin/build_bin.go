@@ -49,16 +49,19 @@ func mergeKubeDevConfigAndBinConfig(k *env.KubeDevConfig, b *BinConfig) {
 	b.KubeBuildPlatforms = k.BuildPlatform
 }
 
-func BuildBinary() error {
+func BuildBinary(args []string) error {
 	// Step 1: init configuration file
 	binConfig := NewDefaultBinConfig()
 	mergeKubeDevConfigAndBinConfig(&env.Config, binConfig)
 
 	// Step 2: generate version file
-	env.WriteVersionFile(env.KubeVersionFile)
+	err := env.WriteVersionFile(env.KubeVersionFile)
+	if err != nil {
+		return err
+	}
 
 	// step 3: build binary
-	cmd := exec.Command("bash", "build/run.sh", "make")
+	cmd := exec.Command("bash", "build/run.sh", "make", args[0])
 	cmd.Env = os.Environ()
 	binConfig.SetEnv(cmd)
 	out, err := cmd.CombinedOutput()
