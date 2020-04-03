@@ -36,7 +36,6 @@ func (k *KubeVersion) setKubeGitCommit(s string) error {
 		return err
 	}
 	k.KubeGitCommit = string(out)
-	log.Printf("Git commit is: %v \n", k.KubeGitCommit)
 	return nil
 }
 
@@ -56,11 +55,10 @@ func (k *KubeVersion) setKubeGitVersion(s string) error {
 	}
 	cutVersion := strings.Split(string(fullVersion), "-")
 	if len(cutVersion) > 1 {
-		k.KubeGitVersion = cutVersion[0] + "-" + cutVersion[1]
+		k.KubeGitVersion = strings.Join([]string{cutVersion[0], cutVersion[1]}, "-")
 	} else {
 		k.KubeGitVersion = cutVersion[0]
 	}
-	log.Printf("Kube version is: %v \n", k.KubeGitVersion)
 	return nil
 }
 
@@ -70,7 +68,6 @@ func (k *KubeVersion) setKubeTreeState(s string) error {
 		return nil
 	}
 	k.KubeGitTreeState = cleanTreeState
-	log.Printf("Git tree state is: %v \n", k.KubeGitTreeState)
 	return nil
 }
 
@@ -82,8 +79,6 @@ func (k *KubeVersion) setKubeGitMajorAndMinor() error {
 
 	k.KubeGitMajor = strings.Split(versions[0], "v")[1]
 	k.KubeGitMinor = versions[1]
-	log.Printf("Kube git major is: %v \n", k.KubeGitMajor)
-	log.Printf("Kube git minor is: %v \n", k.KubeGitMinor)
 	return nil
 }
 
@@ -117,9 +112,18 @@ func WriteVersionFile(name string) error {
 	return nil
 }
 
-func GetKubeVersion() string {
-	k := KubeVersion{}
-	k.setKubeGitCommit("")
-	k.setKubeGitVersion("")
+func GetKubeVersion(k KubeVersion) string {
 	return k.KubeGitVersion
+}
+
+func GetKubeVersionNoV(k KubeVersion) string {
+	version := strings.Split(k.KubeGitVersion, "-")[0]
+	trimedVersion := strings.Trim(version, "v")
+	return trimedVersion
+}
+
+func GetComponentDirName(component string, k KubeVersion) string {
+	version := strings.Split(k.KubeGitVersion, "-")[0]
+	trimedVersion := strings.Trim(version, "v")
+	return strings.Join([]string{component, trimedVersion}, "-")
 }
