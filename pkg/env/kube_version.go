@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+const (
+	KubeBinPath string = "_output/dockerized/bin"
+)
+
 var KubeVersionFile string = "kube_version"
 
 var cleanTreeState string = "clean"
@@ -52,7 +56,7 @@ func (k *KubeVersion) setKubeGitVersion(s string) error {
 	}
 	cutVersion := strings.Split(string(fullVersion), "-")
 	if len(cutVersion) > 1 {
-		k.KubeGitVersion = cutVersion[0] + cutVersion[1]
+		k.KubeGitVersion = cutVersion[0] + "-" + cutVersion[1]
 	} else {
 		k.KubeGitVersion = cutVersion[0]
 	}
@@ -111,4 +115,11 @@ func WriteVersionFile(name string) error {
 		return err
 	}
 	return nil
+}
+
+func GetKubeVersion() string {
+	k := KubeVersion{}
+	k.setKubeGitCommit("")
+	k.setKubeGitVersion("")
+	return k.KubeGitVersion
 }

@@ -31,9 +31,13 @@ func (i *BinConfig) String() string {
 	return binConfigString
 }
 
-func (i *BinConfig) SetEnv(cmd *exec.Cmd) {
+func (i *BinConfig) SetEnv(cmd *exec.Cmd, arch string) {
 	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_GIT_VERSION_FILE=%s", i.KubeGitVersionFile))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_PLATFORMS=%s", i.KubeBuildPlatforms))
+	if arch != "" {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_PLATFORMS=%s", arch))
+	} else {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("KUBE_BUILD_PLATFORMS=%s", i.KubeBuildPlatforms))
+	}
 	cmd.Env = append(cmd.Env, fmt.Sprintf("GOFLAGS=%s", i.GoFlags))
 }
 
@@ -46,10 +50,12 @@ func NewDefaultBinConfig() *BinConfig {
 }
 
 func mergeKubeDevConfigAndBinConfig(k *env.KubeDevConfig, b *BinConfig) {
-	b.KubeBuildPlatforms = k.BuildPlatform
+	if k.BuildPlatform != "" {
+		b.KubeBuildPlatforms = k.BuildPlatform
+	}
 }
 
-func BuildBinary(args []string) error {
+func BuildBinary(args []string, arch string) error {
 	// Step 1: init configuration file
 	binConfig := NewDefaultBinConfig()
 	mergeKubeDevConfigAndBinConfig(&env.Config, binConfig)
@@ -63,7 +69,7 @@ func BuildBinary(args []string) error {
 	// step 3: build binary
 	cmd := exec.Command("bash", "build/run.sh", "make", args[0])
 	cmd.Env = os.Environ()
-	binConfig.SetEnv(cmd)
+	binConfig.SetEnv(cmd, arch)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error building binary: %v", err)

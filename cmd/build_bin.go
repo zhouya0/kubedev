@@ -14,7 +14,11 @@ var binCmd = &cobra.Command{
 	Long:  "Build binaries for kubernetes components",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		err := BuildBinaryComponents(args)
+		arch, _ := cmd.Flags().GetString("arch")
+		if arch == "" {
+			arch = "linux/amd64"
+		}
+		err := BuildBinaryComponents(args, arch)
 		if err != nil {
 			Fatal(err.Error(), DefaultErrorExitCode)
 		}
@@ -23,8 +27,9 @@ var binCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(binCmd)
+	binCmd.Flags().StringP("arch", "a", "", "The binary build arch, could be linux/amd64 or linux/arm64")
 }
 
-func BuildBinaryComponents(args []string) error {
-	return bin.BuildBinary(args)
+func BuildBinaryComponents(args []string, arch string) error {
+	return bin.BuildBinary(args, arch)
 }

@@ -1,16 +1,16 @@
 Name: kubelet
-Version: {{ .Version }}
-Release: {{ .Revision }}
+Version: %{_version}
+Release: %{_release}
 Summary: Container cluster management
 
 License: ASL 2.0
 URL: https://kubernetes.io
-Source0: {{ .DownloadLinkBase }}/bin/linux/{{ .GoArch }}/kubelet
+Source0: %{name}-%{version}.tar.gz
 
 BuildRequires: systemd
 BuildRequires: curl
 Requires: iptables >= 1.4.21
-Requires: kubernetes-cni >= {{ index .Dependencies "kubernetes-cni" }}
+Requires: kubernetes-cni >= 0.7.5
 Requires: socat
 Requires: util-linux
 Requires: ethtool
@@ -34,7 +34,6 @@ cp -p %SOURCE0 %{_builddir}/
 # TODO: Do we need this?
 #rm -rf $RPM_BUILD_ROOT
 
-cd %{_builddir}
 install -m 755 -d %{buildroot}%{_unitdir}
 install -m 755 -d %{buildroot}%{_unitdir}/kubelet.service.d/
 install -m 755 -d %{buildroot}%{_bindir}
@@ -43,6 +42,7 @@ install -p -m 755 -t %{buildroot}%{_bindir}/ kubelet
 install -p -m 644 -t %{buildroot}%{_unitdir}/ kubelet.service
 install -m 755 -d %{buildroot}%{_sysconfdir}/sysconfig/
 install -p -m 644 -T kubelet.env %{buildroot}%{_sysconfdir}/sysconfig/kubelet
+install -m 755 -d %{buildroot}%{_sysconfdir}/kubernetes/manifests/
 
 # TODO: Do we need this?
 #%make_install
@@ -50,7 +50,7 @@ install -p -m 644 -T kubelet.env %{buildroot}%{_sysconfdir}/sysconfig/kubelet
 %files
 %{_bindir}/kubelet
 %{_unitdir}/kubelet.service
-
+%{_sysconfdir}/kubernetes/manifests/
 %config(noreplace) %{_sysconfdir}/sysconfig/kubelet
 
 # TODO: Do we need these?

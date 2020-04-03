@@ -32,9 +32,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kubedev.yaml)")
-
-	// Get this clear
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func initConfig() {
@@ -53,7 +50,6 @@ func initConfig() {
 
 	// read in environment variables that match
 	viper.AutomaticEnv()
-	fmt.Println("I'm excuted")
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 		viper.Unmarshal(&env.Config)
