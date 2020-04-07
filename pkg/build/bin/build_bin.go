@@ -2,8 +2,9 @@ package bin
 
 import (
 	"fmt"
+	"kubedev/pkg/cli"
 	"kubedev/pkg/env"
-	"log"
+	kubedevlog "kubedev/pkg/log"
 	"os"
 	"os/exec"
 	"reflect"
@@ -56,25 +57,35 @@ func mergeKubeDevConfigAndBinConfig(k *env.KubeDevConfig, b *BinConfig) {
 }
 
 func BuildBinary(args []string, arch string) error {
+	logger := kubedevlog.NewLogger()
+	status := cli.NewStatus()
+
 	// Step 1: init configuration file
 	binConfig := NewDefaultBinConfig()
 	mergeKubeDevConfigAndBinConfig(&env.Config, binConfig)
 
 	// Step 2: generate version file
+	icon := "📝"
+	status.Start(fmt.Sprintf("Writing version file %s", icon))
 	err := env.WriteVersionFile(env.KubeVersionFile)
+	status.End(err == nil)
 	if err != nil {
+		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// step 3: build binary
+	icon = "🔨"
+	status.Start(fmt.Sprintf("Building binary %s %s", args[0], icon))
 	cmd := exec.Command("bash", "build/run.sh", "make", args[0])
 	cmd.Env = os.Environ()
 	binConfig.SetEnv(cmd, arch)
 	out, err := cmd.CombinedOutput()
+	status.End(err == nil)
+	logger.Printf("Build binary: %s", string(out))
 	if err != nil {
-		log.Printf("Error building binary: %v", err)
+		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
-	log.Printf("Build binary: %s", string(out))
 	return nil
 }
