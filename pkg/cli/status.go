@@ -27,7 +27,11 @@ func (s *Status) End(success bool) {
 		s.spinner.Stop()
 		fmt.Print("\r")
 	}
-
+	if success {
+		fmt.Printf(s.successFormat, s.status)
+	} else {
+		fmt.Printf(s.failureFormat, s.status)
+	}
 	s.status = ""
 }
 
@@ -36,7 +40,7 @@ func (s *Status) Start(status string) {
 
 	s.status = status
 	if s.spinner != nil {
-		s.spinner.SetSuffix(s.status)
+		s.spinner.SetSuffix(fmt.Sprintf(" %s ", s.status))
 		s.spinner.Start()
 	}
 }

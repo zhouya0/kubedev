@@ -27,6 +27,7 @@ var spinnerFrames = []string{
 
 type Spinner struct {
 	stop        chan struct{}
+	stopped     chan struct{}
 	mu          *sync.Mutex
 	running     bool
 	ticker      *time.Ticker
@@ -45,6 +46,7 @@ func NewSpinner() *Spinner {
 	}
 	return &Spinner{
 		stop:        make(chan struct{}, 1),
+		stopped:     make(chan struct{}),
 		mu:          &sync.Mutex{},
 		frameFormat: frameFormat,
 	}
@@ -82,6 +84,7 @@ func (s *Spinner) Start() {
 						defer s.mu.Unlock()
 						s.ticker.Stop()
 						s.running = false
+						s.stopped <- struct{}{}
 					}()
 					return
 				case <-s.ticker.C:
@@ -105,4 +108,5 @@ func (s *Spinner) Stop() {
 	}
 	s.stop <- struct{}{}
 	s.mu.Unlock()
+	<-s.stopped
 }

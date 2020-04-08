@@ -7,6 +7,7 @@ import (
 	kubedevlog "kubedev/pkg/log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 )
 
@@ -65,8 +66,7 @@ func BuildBinary(args []string, arch string) error {
 	mergeKubeDevConfigAndBinConfig(&env.Config, binConfig)
 
 	// Step 2: generate version file
-	icon := "📝"
-	status.Start(fmt.Sprintf("Writing version file %s", icon))
+	status.Start(fmt.Sprintf("Writing version file %s", env.WriteIcon))
 	err := env.WriteVersionFile(env.KubeVersionFile)
 	status.End(err == nil)
 	if err != nil {
@@ -75,8 +75,7 @@ func BuildBinary(args []string, arch string) error {
 	}
 
 	// step 3: build binary
-	icon = "🔨"
-	status.Start(fmt.Sprintf("Building binary %s %s", args[0], icon))
+	status.Start(fmt.Sprintf("Building binary %s %s", args[0], env.BuildIcon))
 	cmd := exec.Command("bash", "build/run.sh", "make", args[0])
 	cmd.Env = os.Environ()
 	binConfig.SetEnv(cmd, arch)
@@ -87,5 +86,7 @@ func BuildBinary(args []string, arch string) error {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
+
+	fmt.Printf("Building binary %s success! File can be found in:\n %s\n", args[0], filepath.Join(env.KubeBinPath, arch, args[0]))
 	return nil
 }

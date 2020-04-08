@@ -2,9 +2,10 @@ package image
 
 import (
 	"fmt"
+	"kubedev/pkg/cli"
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
-	"log"
+	kubedevlog "kubedev/pkg/log"
 	"os"
 	"os/exec"
 	"reflect"
@@ -79,34 +80,45 @@ func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
 }
 
 func BuildImages(args []string) error {
-	imageConfig := NewDefaultImageConfig()
+	logger := kubedevlog.NewLogger()
+	status := cli.NewStatus()
 
 	// Step 1: init config file
+	imageConfig := NewDefaultImageConfig()
 	mergeKubeDevConfigAndImageConfig(&env.Config, imageConfig)
-	log.Printf("The image config is: %s", imageConfig.String())
 
 	// Step 2: pull all images
+	status.Start(fmt.Sprintf("Pulling building images %s", env.ImageIcon))
 	err := prePullImages()
+	status.End(err == nil)
 	if err != nil {
+		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// Step 3: generate version file
+	status.Start(fmt.Sprintf("Writing version file %s", env.WriteIcon))
 	err = env.WriteVersionFile(env.KubeVersionFile)
+	status.End(err == nil)
 	if err != nil {
+		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// Step 4: make release
+	status.Start(fmt.Sprintf("Making release images %s", env.BuildIcon))
 	cmd := exec.Command("make", "release-images")
 	cmd.Env = os.Environ()
 	imageConfig.SetEnv(cmd)
 	out, err := cmd.CombinedOutput()
+	status.End(err == nil)
+	logger.Printf("Build images: %s", string(out))
 	if err != nil {
-		log.Printf("Error building images: %s", err.Error())
+		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
-	log.Printf("Build images: %s", string(out))
+
+	fmt.Printf("Building images success!")
 	return nil
 }
 

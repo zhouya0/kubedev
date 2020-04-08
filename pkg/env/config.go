@@ -8,3 +8,10 @@ type KubeDevConfig struct {
 }
 
 var Config KubeDevConfig
+
+var (
+	BuildIcon   string = "🔨"
+	ImageIcon   string = "💽"
+	WriteIcon   string = "📝"
+	PackageIcon string = "📦"
+)
