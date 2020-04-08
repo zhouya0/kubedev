@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"runtime"
 	"sync"
 	"time"
 )
@@ -41,9 +40,6 @@ func NewSpinner() *Spinner {
 	// toggling wrapping seems to behave poorly on windows
 	// in general only the simplest escape codes behave well at the moment,
 	// and only in newer shells
-	if runtime.GOOS == "windows" {
-		frameFormat = "\r%s%s%s"
-	}
 	return &Spinner{
 		stop:        make(chan struct{}, 1),
 		stopped:     make(chan struct{}),
