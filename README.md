@@ -18,12 +18,12 @@ make
 make install
 ```
 Going to your kubernetes repo (depending on your own environment):
-```
+```shell
 cd /root/gopath/src/k8s.io/kubernetes
 ```
 
 Start `kubedev`!
-```
+```shell
 kubedev rpm kubelet
 ```
 
@@ -37,4 +37,22 @@ Building binary kubelet success! File can be found in:
 ✔︎ Packaging binary to RPM 📦
 Building RPM kubelet success! Package can be found in:
  /root/rpmbuild/RPMS
+```
+# Usage
+
+Building binary whith arch arm64:
+```shell
+kubedev bin kubectl -a armd64
+```
+
+Building images with specified repo tag:
+```shell
+cat <<EOF >> ~/.kubedev.yaml
+DockerRegistry: yaopolytech
+DockerTag: v1.18.0
+EOF
+```
+Then build `kube-apiserver`, `kube-scheduler`, `kube-proxy`images: 
+```shell
+kubedev images
 ```
