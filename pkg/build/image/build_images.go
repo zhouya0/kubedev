@@ -129,7 +129,7 @@ func prePullImages() error {
 		return err
 	}
 	// imageGetter.PullImage(kubeImages.DebianHyperKubeBase)
-	// imageGetter.PullImage(kubeImages.KubeCross)
+	imageGetter.PullImage(kubeImages.KubeCross)
 	err = imageGetter.PullImage(kubeImages.KubePause)
 	if err != nil {
 		return err
