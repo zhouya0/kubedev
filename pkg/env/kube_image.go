@@ -30,7 +30,7 @@ func (k *KubeBuildImages) getKubeCross() {
 	cmd := exec.Command("cat", "build/build-image/cross/VERSION")
 	out, _ := cmd.CombinedOutput()
 	log.Printf("KubeCross version %s", string(out))
-	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross" + string(out)
+	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross:" + string(out)
 	k.KubeCross = kubeCross
 }
 
@@ -57,7 +57,7 @@ func (k *KubeBuildImages) getDebianHyperKubeBase() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianHyperKubeBase version %s", version)
-		debianHyperKubeBase := "k8s.gcr.io/debian-hyperkube-base-amd64" + version
+		debianHyperKubeBase := "k8s.gcr.io/debian-hyperkube-base-amd64:" + version
 		k.DebianIptables = debianHyperKubeBase
 	}
 }
