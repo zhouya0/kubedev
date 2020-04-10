@@ -18,9 +18,13 @@ var Images = map[string]string{
 // PullImage will try to pull image using CN source
 func PullImage(image string) error {
 	oldImage := image
-	slices := strings.Split(image, "/")
-	slices[0] = Images[slices[0]]
-	image = strings.Join(slices, "/")
+	splitTags := strings.Split(oldImage, ":")
+	version := splitTags[1]
+	repoTags := strings.Split(splitTags[0], "/")
+	imageName := repoTags[len(repoTags)-1]
+	repoTag := strings.Join(repoTags[:len(repoTags)-1], "/")
+	newRepoTag := Images[repoTag]
+	image = newRepoTag + "/" + imageName + ":" + version
 	cmd := exec.Command("docker", "pull", image)
 	out, err := cmd.CombinedOutput()
 	log.Printf("Pull image output: %s", string(out))

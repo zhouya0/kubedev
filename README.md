@@ -10,6 +10,14 @@
 - Better log handling.
 
 # Quick Start 
+
+Make make sure you have the right Golang development environment:
+```shell
+export GO111MODULE=on
+# For China uses
+export GOPROXY="https://goproxy.cn" 
+```
+
 Install `kubedev`:
 ```shell
 git clone https://github.com/zhouya0/kubedev.git
