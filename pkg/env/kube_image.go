@@ -29,8 +29,9 @@ func GetAllImages() KubeBuildImages {
 func (k *KubeBuildImages) getKubeCross() {
 	cmd := exec.Command("cat", "build/build-image/cross/VERSION")
 	out, _ := cmd.CombinedOutput()
-	log.Printf("KubeCross version %s", string(out))
-	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross:" + string(out)
+	version := strings.TrimSpace(string(out))
+	log.Printf("KubeCross version %s", version)
+	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross:" + version
 	k.KubeCross = kubeCross
 }
 
