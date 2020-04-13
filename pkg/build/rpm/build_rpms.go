@@ -18,6 +18,8 @@ const (
 	rpmSource string = "rpmbuild/SOURCES"
 	rpmSpecs  string = "rpmbuild/SPECS"
 	rpmRpms   string = "rpmbuild/RPMS"
+	rpmSrpms  string = "rpmbuild/SRPMS"
+	rpmBuild  string = "rpmbuild/BUILD"
 )
 
 var kubeversion env.KubeVersion = env.NewKubeVersion()
@@ -37,6 +39,9 @@ func BuildRPM(args []string, arch string) error {
 	}
 
 	status.Start(fmt.Sprintf("Packaging binary to RPM %s", env.PackageIcon))
+	// Step2: Make directories for RPM build use
+	makeRPMBuildDir(logger)
+
 	// Step2: Move kubelet to Source directory
 	err := cpComponentToSource(arch, args[0], logger)
 	if err != nil {
@@ -83,6 +88,29 @@ func RPMBuild(component string, logger *log.Logger) error {
 		return err
 	}
 	return nil
+}
+
+func makeRPMBuildDir(logger *log.Logger) {
+	pathRPM := filepath.Join(util.GetHomeDir(), rpmRpms)
+	pathSRPM := filepath.Join(util.GetHomeDir(), rpmSrpms)
+	pathSPEC := filepath.Join(util.GetHomeDir(), rpmSpecs)
+	pathSOURCE := filepath.Join(util.GetHomeDir(), rpmSource)
+	pathBUILD := filepath.Join(util.GetHomeDir(), rpmBuild)
+	if !util.CheckExist(pathRPM) {
+		os.MkdirAll(pathRPM, os.ModePerm)
+	}
+	if !util.CheckExist(pathSRPM) {
+		os.MkdirAll(pathSRPM, os.ModePerm)
+	}
+	if !util.CheckExist(pathSPEC) {
+		os.MkdirAll(pathSPEC, os.ModePerm)
+	}
+	if !util.CheckExist(pathSOURCE) {
+		os.MkdirAll(pathSOURCE, os.ModePerm)
+	}
+	if !util.CheckExist(pathBUILD) {
+		os.MkdirAll(pathBUILD, os.ModePerm)
+	}
 }
 
 func cpComponentToSource(arch string, component string, logger *log.Logger) error {
