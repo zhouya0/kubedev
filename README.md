@@ -30,6 +30,11 @@ Going to your kubernetes repo (depending on your own environment):
 cd /root/gopath/src/k8s.io/kubernetes
 ```
 
+Make sure `rpmbuild` is intalled in your environment:
+```shell
+yum install rpm-build
+```
+
 Start `kubedev`!
 ```shell
 kubedev rpm kubelet
