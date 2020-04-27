@@ -15,9 +15,6 @@ var binCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		arch, _ := cmd.Flags().GetString("arch")
-		if arch == "" {
-			arch = "linux/amd64"
-		}
 		err := BuildBinaryComponents(args, arch)
 		if err != nil {
 			Fatal(err.Error(), DefaultErrorExitCode)
@@ -27,7 +24,7 @@ var binCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(binCmd)
-	binCmd.Flags().StringP("arch", "a", "", "The binary build arch, could be linux/amd64 or linux/arm64")
+	AddArchFlag(binCmd, "linux/amd64")
 }
 
 func BuildBinaryComponents(args []string, arch string) error {

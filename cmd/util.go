@@ -49,3 +49,7 @@ func RequireArguments(c *cobra.Command, args []string) {
 		Fatal(UsageErrorf(c, "more arguments is needed: %v", strings.Join(args, " ")).Error(), DefaultErrorExitCode)
 	}
 }
+
+func AddArchFlag(cmd *cobra.Command, arch string) {
+	cmd.Flags().StringP("arch", "a", arch, "The binary build arch, could be linux/amd64 or linux/arm64")
+}
