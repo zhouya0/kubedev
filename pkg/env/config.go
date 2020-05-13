@@ -2,10 +2,10 @@ package env
 
 // KubeDevConfig is the only config file for kubedev
 type KubeDevConfig struct {
-	DockerRegistry string
-	DockerTag      string
-	KubeVersion    string
-	BuildPlatform  string
+	DockerRegistry      string
+	DockerTag           string
+	OverrideKubeVersion string
+	BuildPlatform       string
 }
 
 var Config KubeDevConfig

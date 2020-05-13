@@ -91,9 +91,13 @@ func NewKubeVersion() KubeVersion {
 	return k
 }
 
-func generateContent() string {
+func generateContent(overrideVersion string) string {
 	var s string
 	k := NewKubeVersion()
+	if overrideVersion != "" {
+		k.setKubeGitVersion(overrideVersion)
+		k.setKubeGitMajorAndMinor()
+	}
 	s = s + fmt.Sprintf("KUBE_GIT_COMMIT=%s\n", k.KubeGitCommit)
 	s = s + fmt.Sprintf("KUBE_GIT_TREE_STATE=%s\n", k.KubeGitTreeState)
 	s = s + fmt.Sprintf("KUBE_GIT_VERSION=%s\n", k.KubeGitVersion)
@@ -102,8 +106,8 @@ func generateContent() string {
 	return s
 }
 
-func WriteVersionFile(name string) error {
-	content := generateContent()
+func WriteVersionFile(name string, overrideVersion string) error {
+	content := generateContent(overrideVersion)
 	data := []byte(content)
 	err := ioutil.WriteFile(name, data, 0644)
 	if err != nil {

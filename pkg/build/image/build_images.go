@@ -98,7 +98,7 @@ func BuildImages(args []string) error {
 
 	// Step 3: generate version file
 	status.Start(fmt.Sprintf("Writing version file %s", env.WriteIcon))
-	err = env.WriteVersionFile(env.KubeVersionFile)
+	err = env.WriteVersionFile(env.KubeVersionFile, env.Config.OverrideKubeVersion)
 	status.End(err == nil)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)

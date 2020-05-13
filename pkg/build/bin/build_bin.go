@@ -17,6 +17,7 @@ type BinConfig struct {
 	KubeGitVersionFile string
 	KubeBuildPlatforms string
 	GoFlags            string
+	OverrideVersion    string
 }
 
 func (i *BinConfig) String() string {
@@ -67,7 +68,7 @@ func BuildBinary(args []string, arch string) error {
 
 	// Step 2: generate version file
 	status.Start(fmt.Sprintf("Writing version file %s", env.WriteIcon))
-	err := env.WriteVersionFile(env.KubeVersionFile)
+	err := env.WriteVersionFile(env.KubeVersionFile, env.Config.OverrideKubeVersion)
 	status.End(err == nil)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
