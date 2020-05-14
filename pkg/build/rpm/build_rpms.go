@@ -22,9 +22,8 @@ const (
 	rpmBuild  string = "rpmbuild/BUILD"
 )
 
-var kubeversion env.KubeVersion = env.NewKubeVerisonOverride(env.Config.OverrideKubeVersion)
-
 func BuildRPM(args []string, arch string) error {
+	kubeversion := env.NewKubeVerisonOverride(env.Config.OverrideKubeVersion)
 	logger := kubedevlog.NewLogger()
 	status := cli.NewStatus()
 
@@ -43,28 +42,28 @@ func BuildRPM(args []string, arch string) error {
 	makeRPMBuildDir(logger)
 
 	// Step2: Move kubelet to Source directory
-	err := cpComponentToSource(arch, args[0], logger)
+	err := cpComponentToSource(arch, args[0], logger, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// Step3: Write pre rpmbuild files
-	err = writePreBuildFiles(args[0], logger)
+	err = writePreBuildFiles(args[0], logger, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// Step4: tar the source file
-	err = tarSourceFile(args[0], logger)
+	err = tarSourceFile(args[0], logger, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
 	// Step5: rpm build
-	err = RPMBuild(args[0], logger)
+	err = RPMBuild(args[0], logger, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
@@ -75,7 +74,7 @@ func BuildRPM(args []string, arch string) error {
 	return nil
 }
 
-func RPMBuild(component string, logger *log.Logger) error {
+func RPMBuild(component string, logger *log.Logger, kubeversion env.KubeVersion) error {
 	specFile := filepath.Join(util.GetHomeDir(), rpmSpecs, component+".spec")
 	versionDefine := fmt.Sprintf("_version %s", env.GetKubeVersionNoV(kubeversion))
 	// TODO: what release should be used here?
@@ -113,7 +112,7 @@ func makeRPMBuildDir(logger *log.Logger) {
 	}
 }
 
-func cpComponentToSource(arch string, component string, logger *log.Logger) error {
+func cpComponentToSource(arch string, component string, logger *log.Logger, kubeversion env.KubeVersion) error {
 	componentDir := filepath.Join(env.KubeBinPath, arch, component)
 	rpmSourceDir := filepath.Join(util.GetHomeDir(), rpmSource, env.GetComponentDirName(component, kubeversion), component)
 	// cmd := exec.Command("cp", "-p", componentDir, rpmSourceDir)
@@ -128,20 +127,20 @@ func cpComponentToSource(arch string, component string, logger *log.Logger) erro
 	return nil
 }
 
-func writePreBuildFiles(component string, logger *log.Logger) error {
-	err := writeComponentSpec(component)
+func writePreBuildFiles(component string, logger *log.Logger, kubeversion env.KubeVersion) error {
+	err := writeComponentSpec(component, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
-	err = writeComponentService(component)
+	err = writeComponentService(component, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
 	}
 
-	err = writeComponentEnv(component)
+	err = writeComponentEnv(component, kubeversion)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
@@ -149,7 +148,7 @@ func writePreBuildFiles(component string, logger *log.Logger) error {
 	return nil
 }
 
-func writeComponentSpec(component string) error {
+func writeComponentSpec(component string, kubeversion env.KubeVersion) error {
 	rpmSourceSpecFile := filepath.Join(util.GetHomeDir(), rpmSpecs, component+".spec")
 	// case component == "kubelet":
 	err := util.WriteFile(rpmSourceSpecFile, files.KubeletSpec)
@@ -159,7 +158,7 @@ func writeComponentSpec(component string) error {
 	return nil
 }
 
-func writeComponentService(component string) error {
+func writeComponentService(component string, kubeversion env.KubeVersion) error {
 	rpmServiceFile := filepath.Join(util.GetHomeDir(), rpmSource, env.GetComponentDirName(component, kubeversion), component+".service")
 	err := util.WriteFile(rpmServiceFile, files.KubeletService)
 	if err != nil {
@@ -168,7 +167,7 @@ func writeComponentService(component string) error {
 	return nil
 }
 
-func writeComponentEnv(component string) error {
+func writeComponentEnv(component string, kubeversion env.KubeVersion) error {
 	rpmEnvFile := filepath.Join(util.GetHomeDir(), rpmSource, env.GetComponentDirName(component, kubeversion), component+".env")
 	err := util.WriteFile(rpmEnvFile, files.KubeletEnv)
 	if err != nil {
@@ -177,7 +176,7 @@ func writeComponentEnv(component string) error {
 	return nil
 }
 
-func tarSourceFile(component string, logger *log.Logger) error {
+func tarSourceFile(component string, logger *log.Logger, kubeversion env.KubeVersion) error {
 	sourcePath := filepath.Join(util.GetHomeDir(), rpmSource)
 	tarFile := filepath.Join(util.GetHomeDir(), rpmSource, env.GetComponentDirName(component, kubeversion)+".tar.gz")
 	cmd := exec.Command("tar", "-czvf", tarFile, "-C", sourcePath, env.GetComponentDirName(component, kubeversion))
