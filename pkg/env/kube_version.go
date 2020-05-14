@@ -91,6 +91,15 @@ func NewKubeVersion() KubeVersion {
 	return k
 }
 
+func NewKubeVerisonOverride(overrideVersion string) KubeVersion {
+	k := NewKubeVersion()
+	if overrideVersion != "" {
+		k.setKubeGitVersion(overrideVersion)
+		k.setKubeGitMajorAndMinor()
+	}
+	return k
+}
+
 func generateContent(overrideVersion string) string {
 	var s string
 	k := NewKubeVersion()

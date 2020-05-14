@@ -22,7 +22,7 @@ const (
 	rpmBuild  string = "rpmbuild/BUILD"
 )
 
-var kubeversion env.KubeVersion = env.NewKubeVersion()
+var kubeversion env.KubeVersion = env.NewKubeVerisonOverride(env.Config.OverrideKubeVersion)
 
 func BuildRPM(args []string, arch string) error {
 	logger := kubedevlog.NewLogger()
