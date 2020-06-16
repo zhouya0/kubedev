@@ -68,7 +68,7 @@ func (s *Spinner) Start() {
 		return
 	}
 	s.running = true
-	s.ticker = time.NewTicker(time.Millisecond * 100)
+	s.ticker = time.NewTicker(time.Millisecond * 1000)
 
 	go func() {
 		for {
