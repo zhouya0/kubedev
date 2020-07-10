@@ -109,4 +109,5 @@ func prePullImages() error {
 	if err != nil {
 		return err
 	}
+	return nil
 }
