@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"kubedev/pkg/cli"
 	"kubedev/pkg/env"
+	imageGetter "kubedev/pkg/image"
 	kubedevlog "kubedev/pkg/log"
 	"os"
 	"os/exec"
@@ -75,7 +76,17 @@ func BuildBinary(args []string, arch string) error {
 		return err
 	}
 
-	// step 3: build binary
+	// Step 3: pull all images
+	status.Start(fmt.Sprintf("Pulling building images %s", env.ImageIcon))
+	err = prePullImages()
+	status.End(err == nil)
+	if err != nil {
+		kubedevlog.LogErrorMessage(logger, err)
+		return err
+	}
+
+
+	// step 4: build binary
 	status.Start(fmt.Sprintf("Building binary %s %s", args[0], env.BuildIcon))
 	cmd := exec.Command("bash", "build/run.sh", "make", args[0])
 	cmd.Env = os.Environ()
@@ -90,4 +101,12 @@ func BuildBinary(args []string, arch string) error {
 
 	fmt.Printf("Building binary %s success! File can be found in:\n %s\n", args[0], filepath.Join(env.KubeBinPath, arch, args[0]))
 	return nil
+}
+
+func prePullImages() error {
+	kubeImages := env.GetAllImages()
+	err := imageGetter.PullImage(kubeImages.KubeCross)
+	if err != nil {
+		return err
+	}
 }
