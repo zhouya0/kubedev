@@ -63,7 +63,11 @@ func BuildRPM(args []string, arch string) error {
 	}
 
 	// Step5: rpm build
-	err = RPMBuild(args[0], logger, kubeversion)
+	var target string
+	if arch == "linux/arm64" {
+		target = "aarch64"
+	}
+	err = RPMBuild(args[0], logger, kubeversion, target)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
 		return err
@@ -74,12 +78,18 @@ func BuildRPM(args []string, arch string) error {
 	return nil
 }
 
-func RPMBuild(component string, logger *log.Logger, kubeversion env.KubeVersion) error {
+func RPMBuild(component string, logger *log.Logger, kubeversion env.KubeVersion, target string) error {
 	specFile := filepath.Join(util.GetHomeDir(), rpmSpecs, component+".spec")
 	versionDefine := fmt.Sprintf("_version %s", env.GetKubeVersionNoV(kubeversion))
 	// TODO: what release should be used here?
 	releaseDefine := fmt.Sprintf("_release %s", "00")
-	cmd := exec.Command("rpmbuild", "-ba", specFile, "--define", versionDefine, "--define", releaseDefine)
+	cmd := &exec.Cmd{}
+	if target != "" {
+		cmd = exec.Command("rpmbuild", "-ba", specFile, "--define", versionDefine, "--define", releaseDefine, "--target", target)
+	} else {
+		cmd = exec.Command("rpmbuild", "-ba", specFile, "--define", versionDefine, "--define", releaseDefine)
+	}
+
 	out, err := cmd.CombinedOutput()
 	logger.Println(string(out))
 	if err != nil {
