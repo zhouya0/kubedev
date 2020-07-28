@@ -77,6 +77,7 @@ func (i *ImageConfig) SetKubeGitVersionFile(s string) {
 func mergeKubeDevConfigAndImageConfig(k *env.KubeDevConfig, i *ImageConfig) {
 	i.KubeDockerImageTag = k.DockerTag
 	i.KubeDockerRegistry = k.DockerRegistry
+	i.KubeFastBuild = k.FastBuild
 }
 
 func BuildImages(args []string) error {

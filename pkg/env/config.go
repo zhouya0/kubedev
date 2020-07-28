@@ -6,6 +6,7 @@ type KubeDevConfig struct {
 	DockerTag           string
 	OverrideKubeVersion string
 	BuildPlatform       string
+	FastBuild string
 }
 
 var Config KubeDevConfig
