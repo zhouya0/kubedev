@@ -31,7 +31,7 @@ func (k *KubeBuildImages) getKubeCross() {
 	out, _ := cmd.CombinedOutput()
 	version := strings.TrimSpace(string(out))
 	log.Printf("KubeCross version %s", version)
-	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross:" + version
+	kubeCross := "k8s.gcr.io/build-image/kube-cross:" + version
 	k.KubeCross = kubeCross
 }
 

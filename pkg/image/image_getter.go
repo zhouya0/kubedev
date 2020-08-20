@@ -11,6 +11,7 @@ var Images = map[string]string{
 	"k8s.gcr.io": "daocloud.io/daocloud",
 	"quay.io":    "quay.azk8s.cn",
 	"us.gcr.io/k8s-artifacts-prod/build-image": "daocloud.io/daocloud",
+	"k8s.gcr.io/build-image": "daocloud.io/daocloud",
 }
 
 // PullImage will try to pull image using CN source
