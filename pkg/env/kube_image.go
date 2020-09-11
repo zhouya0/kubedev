@@ -31,7 +31,7 @@ func (k *KubeBuildImages) getKubeCross() {
 	out, _ := cmd.CombinedOutput()
 	version := strings.TrimSpace(string(out))
 	log.Printf("KubeCross version %s", version)
-	kubeCross := "k8s.gcr.io/build-image/kube-cross:" + version
+	kubeCross := "us.gcr.io/k8s-artifacts-prod/build-image/kube-cross:" + version
 	k.KubeCross = kubeCross
 }
 
@@ -58,7 +58,7 @@ func (k *KubeBuildImages) getDebianHyperKubeBase() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianHyperKubeBase version %s", version)
-		debianHyperKubeBase := "k8s.gcr.io/debian-hyperkube-base-amd64:" + version
+		debianHyperKubeBase := "us.gcr.io/k8s-artifacts-prod/build-image/debian-hyperkube-base-amd64:" + version
 		k.DebianIptables = debianHyperKubeBase
 	}
 }
@@ -72,7 +72,7 @@ func (k *KubeBuildImages) getDebianBase() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianBase version %s", version)
-		debianBase := "k8s.gcr.io/debian-base-amd64:" + version
+		debianBase := "us.gcr.io/k8s-artifacts-prod/build-image/debian-base-amd64:" + version
 		k.DebianBase = debianBase
 
 	}
@@ -87,7 +87,7 @@ func (k *KubeBuildImages) getDebianIptables() {
 		version := outs[1]
 		version = strings.TrimSpace(version)
 		log.Printf("DebianIptables version %s", version)
-		debianIptables := "k8s.gcr.io/debian-iptables-amd64:" + version
+		debianIptables := "us.gcr.io/k8s-artifacts-prod/build-image/debian-iptables-amd64:" + version
 		k.DebianIptables = debianIptables
 	}
 }
