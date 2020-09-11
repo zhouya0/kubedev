@@ -6,6 +6,7 @@ import (
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
 	kubedevlog "kubedev/pkg/log"
+	"log"
 	"os"
 	"os/exec"
 	"reflect"
@@ -90,7 +91,7 @@ func BuildImages(args []string) error {
 
 	// Step 2: pull all images
 	status.Start(fmt.Sprintf("Pulling building images %s", env.ImageIcon))
-	err := prePullImages()
+	err := prePullImages(logger)
 	status.End(err == nil)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
@@ -123,22 +124,22 @@ func BuildImages(args []string) error {
 	return nil
 }
 
-func prePullImages() error {
+func prePullImages(logger *log.Logger) error {
 	kubeImages := env.GetAllImages()
-	err := imageGetter.PullImage(kubeImages.DebianBase)
+	err := imageGetter.PullImage(kubeImages.DebianBase, logger)
 	if err != nil {
 		return err
 	}
 	// imageGetter.PullImage(kubeImages.DebianHyperKubeBase)
-	err = imageGetter.PullImage(kubeImages.KubeCross)
+	err = imageGetter.PullImage(kubeImages.KubeCross, logger)
 	if err != nil {
 		return err
 	}
-	err = imageGetter.PullImage(kubeImages.KubePause)
+	err = imageGetter.PullImage(kubeImages.KubePause, logger)
 	if err != nil {
 		return err
 	}
-	err = imageGetter.PullImage(kubeImages.DebianIptables)
+	err = imageGetter.PullImage(kubeImages.DebianIptables, logger)
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package image
 
 import (
 	kubedevlog "kubedev/pkg/log"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -15,8 +16,7 @@ var Images = map[string]string{
 }
 
 // PullImage will try to pull image using CN source
-func PullImage(image string) error {
-	logger := kubedevlog.NewLogger()
+func PullImage(image string, logger *log.Logger) error {
 	oldImage := image
 	splitTags := strings.Split(oldImage, ":")
 	version := splitTags[1]

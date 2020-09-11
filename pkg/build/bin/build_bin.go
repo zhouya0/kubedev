@@ -6,6 +6,7 @@ import (
 	"kubedev/pkg/env"
 	imageGetter "kubedev/pkg/image"
 	kubedevlog "kubedev/pkg/log"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -78,7 +79,7 @@ func BuildBinary(args []string, arch string) error {
 
 	// Step 3: pull all images
 	status.Start(fmt.Sprintf("Pulling building images %s", env.ImageIcon))
-	err = prePullImages()
+	err = prePullImages(logger)
 	status.End(err == nil)
 	if err != nil {
 		kubedevlog.LogErrorMessage(logger, err)
@@ -103,9 +104,9 @@ func BuildBinary(args []string, arch string) error {
 	return nil
 }
 
-func prePullImages() error {
+func prePullImages(logger *log.Logger) error {
 	kubeImages := env.GetAllImages()
-	err := imageGetter.PullImage(kubeImages.KubeCross)
+	err := imageGetter.PullImage(kubeImages.KubeCross, logger)
 	if err != nil {
 		return err
 	}
