@@ -18,6 +18,9 @@ var Images = map[string]string{
 // PullImage will try to pull image using CN source
 func PullImage(image string, logger *log.Logger) error {
 	oldImage := image
+	if image == "" {
+		return nil
+	}
 	splitTags := strings.Split(oldImage, ":")
 	version := splitTags[1]
 	repoTags := strings.Split(splitTags[0], "/")
